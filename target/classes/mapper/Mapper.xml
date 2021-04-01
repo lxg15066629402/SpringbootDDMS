@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--设置相关的信息-->
+<mapper namespace="com.example.sqlserver_websocket.mapper.ProductMapper">
+    <!-- 映射关系-->
+    <resultMap id="Product" type="com.example.sqlserver_websocket.entity.Product"  >
+        <!-- 定义主键  -->
+        <id column="productId" property="id"  />
+        <!-- 定义普通属性 -->
+        <result column="planNum" property="planNum"  />
+        <result column="comNum" property="comNum"  />
+        <result column="orderNum" property="orderNum"  />
+        <result column="planDate" property="planDate"  />
+        <result column="repairNum" property="repairNum"  />
+        <result column="productDate" property="date"  />
+    </resultMap>
+
+    <!-- 查询product表中所有数据 resultType="Product"  resultType 与 resultMap 的区别-->
+    <select id="findAllProduct" resultMap="Product">
+        select productId, planNum, comNum, orderNum, planDate, repairNum, productDate  from ProductTest;
+    </select>
+
+    <!-- 查询某列数据 resultType="myUser"-->
+    <select id="SelectById" resultType="Integer">
+        select repairNum from ProductTest;
+    </select>
+
+    <!-- 查询指定时间当天数据 -->
+    <select id="SelectProductDate" parameterType="date" resultMap="Product">
+        <!--select * from ProductTest where DateDiff(dd, productDate= #{productDate},getdate())=0-->
+        select * from ProductTest where DateDiff(dd, productDate= #{productDate},getdate())=0
+    </select>
+    <!-- 根据给定id查询数据 -->
+    <select id="findById" parameterType="int" resultType="Product">
+        select productId, planNum, comNum from ProductTest where id = #{id}
+    </select>
+
+    <!-- 查询一周内数据 -->
+    <select id="SelectWeekProductDate" parameterType="date" resultMap="Product">
+        select * from ProductTest where datediff(week, productDate = #{productDate}-1, getdate()-1)=0
+    </select>
+    <!-- 查询一周数据 -->
+<!--    <select id="SelectWeekProductDate" parameterType="date" resultType="Product">-->
+<!--    select * from ProductTest where CONVERT(datetime,productDate,101)>=DATEADD(wk, DATEDIFF(wk,0,DATEADD(dd, -1, getdate()) ), 0)-->
+<!--        and CONVERT(datetime,productDate,101)<DATEADD(wk, DATEDIFF(wk,0,DATEADD(dd, -1, getdate()) ), 7)-->
+<!--    </select>-->
+    <!-- SELECT
+  *
+  FROM [test].[dbo].[ProductTest]
+
+ where CONVERT(datetime,productDate,101)>=DATEADD(wk, DATEDIFF(wk,0,DATEADD(dd, -1, getdate()) ), 0)
+and CONVERT(datetime,productDate,101)<DATEADD(wk, DATEDIFF(wk,0,DATEADD(dd, -1, getdate()) ), 7); -->
+
+    <!--Order 表格 -->
+    <resultMap id="Order11" type="com.example.sqlserver_websocket.entity.Order" >
+        <!-- 定义主键  -->
+        <id  property="orderId" column="orderId" />
+        <!-- 定义普通属性 -->
+        <result property="rName" column="orderName" />
+        <result property="pName" column="orderPlanName" />
+        <result property="rType" column="orderType" />
+        <result property="rState" column="orderState" />
+        <result property="rMan" column="orderMan" />
+        <result property="rDate" column="orderDate" />
+    </resultMap>
+
+    <!-- 查询orderTets表中所有数据 -->
+    <select id="findAllOrder" resultMap="Order11" >
+        select orderName, orderPlanName, orderType, orderState, orderMan from OrderTest;
+    </select>
+
+<!--    <resultMap id="Welding11" type="com.example.sqlserver_websocket.entity.Welding" >-->
+<!--        &lt;!&ndash; 定义主键  &ndash;&gt;-->
+<!--        <id property="weldingId" column="weldingId" />-->
+<!--        &lt;!&ndash; 定义普通属性 &ndash;&gt;-->
+<!--        <result property="wType" column="weldingType" />-->
+<!--        <result property="wNum" column="weldingNum" />-->
+<!--        <result property="wDate" column="weldingDate"/>-->
+<!--        &lt;!&ndash;<result property="wDate" javaType="Date" column="weldingDate"  jdbcType="Datetime" /> &ndash;&gt;-->
+<!--    </resultMap>-->
+
+<!--    &lt;!&ndash; 查询weldingTest表中所有数据  resultType="Welding"&ndash;&gt;-->
+<!--    <select id="findAllWelding"  resultMap="Welding11">&#45;&#45;-->
+<!--        select weldingType, weldingNum  from  WeldingTest;-->
+<!--    </select>-->
+
+    <!-- 测试-->
+    <resultMap id="Welding11" type="com.example.sqlserver_websocket.entity.Welding" >
+        <!-- 定义主键  -->
+        <id property="weldingId" column="weldingId" />
+        <!-- 定义普通属性 -->
+        <result property="name" column="weldingType" />
+        <result property="value" column="weldingNum" />
+        <result property="wDate" column="weldingDate"/>
+        <!--<result property="wDate" javaType="Date" column="weldingDate"  jdbcType="Datetime" /> -->
+    </resultMap>
+
+    <!-- 查询weldingTest表中所有数据  resultType="Welding"-->
+    <select id="findAllWelding"  resultMap="Welding11">--
+        select weldingType, weldingNum  from  WeldingTest;
+    </select>
+
+    <!-- 定义resultMap，type为HashMap, 读取部分字段信息-->
+    <resultMap id="PartWeldingMap" type="java.util.HashMap">
+            <result column="weldingType"  property="wType"/>
+            <result column="weldingNum"  property="wNum" />
+            <!--     类型为对象需要指定jdbcType 和 javaType   -->
+            <!-- <result column="weldingDate"  property="wDate" jdbcType="Datetime" javaType="Date"/> -->
+    </resultMap>
+
+    <select id="SelectPartWelding"  resultMap="PartWeldingMap">
+        select weldingType, weldingNum  from  WeldingTest;
+    </select>
+
+
+
+</mapper>
